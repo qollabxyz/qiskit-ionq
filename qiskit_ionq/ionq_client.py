@@ -143,7 +143,8 @@ class IonQClient:
             req_path,
             data=as_json,
             headers=self.api_headers,
-            timeout=30,
+            # Don't timeout when user credits spending consent is requested
+            timeout=None,
         )
         exceptions.IonQAPIError.raise_for_status(res)
         return res.json()
