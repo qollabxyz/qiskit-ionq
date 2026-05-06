@@ -242,6 +242,12 @@ class IonQJob(JobV1):
         Returns:
             dict: A dictionary of counts.
         """
+        warnings.warn(
+            "Job.get_counts() is IonQ-only shortcut, it's not available in generic Qiskit; "
+            "consider rewriting it to use Job.result().get_counts() instead for this code "
+            "to run properly on non-IonQ backends.",
+            UserWarning,
+        )
         return self.result().get_counts(circuit)
 
     def get_probabilities(self, circuit=None):  # pylint: disable=unused-argument
@@ -256,6 +262,12 @@ class IonQJob(JobV1):
         Returns:
             tuple(dict[str, float], dict[str, float]): A tuple counts, probabilities.
         """
+        warnings.warn(
+            "Job.get_probabilities() is IonQ-only shortcut, it's not available in generic Qiskit; "
+            "consider rewriting it to use Job.result().get_probabilities() instead for this code "
+            "to run properly on non-IonQ backends.",
+            UserWarning,
+        )
         return self.result().get_probabilities()
 
     def result(
