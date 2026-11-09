@@ -682,6 +682,37 @@ def test_result__failed_from_api(mock_backend, requests_mock):
     assert 'Failure from IonQ API "ExampleError: example error"' in str(exc.value)
 
 
+def test_result__failed_v04_message(mock_backend, requests_mock):
+    """A v0.4 failure carries its text in ``message``, which the error must show.
+
+    Args:
+        mock_backend (MockBackend): A mock IonQBackend.
+        requests_mock (:class:`request_mock.Mocker`): A requests mocker.
+    """
+    job_id = "test_id"
+    job_result = conftest.dummy_failed_job(
+        job_id,
+        failure={
+            "code": "InvalidCircuit",
+            "message": "Classical bit c[0] is written more than once",
+        },
+    )
+    client = mock_backend.client
+    job = ionq_job.IonQJob(mock_backend, None, circuit=QuantumCircuit(1, 1))
+    requests_mock.post(client.make_path("jobs"), status_code=200, json=job_result)
+    job.submit()
+    requests_mock.get(
+        client.make_path("jobs", job_id), status_code=200, json=job_result
+    )
+
+    with pytest.raises(exceptions.IonQJobFailureError) as exc:
+        job.result()
+    assert (
+        'Failure from IonQ API "InvalidCircuit: Classical bit c[0] is written more than once"'
+        in str(exc.value)
+    )
+
+
 def test_result__cancelled(mock_backend, requests_mock):
     """Test result fetching when the job is canceled on the API side.
 
