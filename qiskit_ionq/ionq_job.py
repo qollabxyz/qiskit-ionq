@@ -569,10 +569,12 @@ class IonQJob(JobV1):
 
         if self._status == jobstatus.JobStatus.ERROR:
             failure = response.get("failure") or {}
+            # v0.4 puts the text in "message"; older responses used "error"
+            message = failure.get("message") or failure.get("error") or ""
             raise exceptions.IonQJobFailureError(
                 f"Unable to retrieve result for job {self._job_id}. "
                 f'Failure from IonQ API "{failure.get("code","")}: '
-                f'{failure.get("error","")}"'
+                f'{message}"'
             )
 
         if self._status == jobstatus.JobStatus.CANCELLED:

@@ -208,11 +208,12 @@ def dummy_multi_parent_response(job_id, child_job_ids, status="completed"):
     }
 
 
-def dummy_failed_job(job_id):
+def dummy_failed_job(job_id, failure=None):
     """A dummy response payload for a failed job.
 
     Args:
         job_id (str): An arbitrary job id.
+        failure (dict): The job's ``failure`` object; a legacy ``error`` one by default.
 
     Returns:
         dict: A json response dict.
@@ -231,7 +232,7 @@ def dummy_failed_job(job_id):
         }
     )
     return {
-        "failure": {"error": "example error", "code": "ExampleError"},
+        "failure": failure or {"error": "example error", "code": "ExampleError"},
         "status": "failed",
         "metadata": {"shots": "1", "qiskit_header": qiskit_header},
         "type": "circuit",
